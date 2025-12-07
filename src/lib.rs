@@ -7,8 +7,8 @@ use opencv::{
 };
 use std::path::Path;
 
-const RESIZE_DIM: i32 = 200;
-const BLUR_SIGMA: f64 = 50.0;
+const RESIZE_DIM: i32 = 100;
+const BLUR_SIGMA: f64 = 15.0;
 
 #[derive(Debug)]
 pub struct GradientResult {
@@ -24,11 +24,12 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		anyhow::bail!("Image is empty at {:?}", image_path);
 	}
 
+	let size = img.size().unwrap();
 	let mut small = Mat::default();
 	imgproc::resize(
 		&img,
 		&mut small,
-		core::Size::new(RESIZE_DIM, RESIZE_DIM),
+		core::Size::new(RESIZE_DIM, RESIZE_DIM * size.height / size.width),
 		0.0,
 		0.0,
 		imgproc::INTER_AREA,
