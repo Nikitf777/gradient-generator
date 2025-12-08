@@ -46,7 +46,7 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		core::Size::new(0, 0),
 		BLUR_SIGMA,
 		BLUR_SIGMA,
-		BorderTypes::BORDER_REFLECT as i32,
+		BorderTypes::BORDER_REFLECT_101 as i32,
 		core::AlgorithmHint::ALGO_HINT_ACCURATE,
 	)?;
 
@@ -69,7 +69,7 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		5,
 		1.0,
 		0.0,
-		BorderTypes::BORDER_CONSTANT as i32,
+		BorderTypes::BORDER_REFLECT_101 as i32,
 	)?;
 
 	let mut grad_y = Mat::default();
@@ -82,7 +82,7 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		5,
 		1.0,
 		0.0,
-		BorderTypes::BORDER_CONSTANT as i32,
+		BorderTypes::BORDER_REFLECT_101 as i32,
 	)?;
 
 	let mut mag = Mat::default();
