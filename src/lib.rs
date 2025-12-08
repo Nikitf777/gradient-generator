@@ -18,13 +18,17 @@ pub struct GradientResult {
 }
 
 pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
-	let img = imgcodecs::imread(image_path.to_str().unwrap(), imgcodecs::IMREAD_COLOR)
-		.context("Failed to read image")?;
+	let img = imgcodecs::imread(
+		image_path.to_str().context("Not a valid filepath")?,
+		imgcodecs::IMREAD_COLOR,
+	)
+	.context("Failed to read image")?;
+
 	if img.empty() {
 		anyhow::bail!("Image is empty at {:?}", image_path);
 	}
 
-	let size = img.size().unwrap();
+	let size = img.size()?;
 	let mut small = Mat::default();
 	imgproc::resize(
 		&img,
