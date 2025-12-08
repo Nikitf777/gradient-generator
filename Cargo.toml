@@ -6,10 +6,3 @@ edition = "2024"
 [dependencies]
 anyhow = "1.0.100"
 opencv = "0.97.2"
-
-[profile.release]
-opt-level = "z"
-strip = "symbols"
-lto = true
-codegen-units = 1
-panic = "abort"
