@@ -8,9 +8,6 @@ use opencv::{
 };
 use std::path::Path;
 
-const RESIZE_DIM: i32 = 100;
-const BLUR_SIGMA: f64 = 15.0;
-
 #[derive(Debug)]
 pub struct GradientResult {
 	pub start_color: Color,
@@ -18,7 +15,11 @@ pub struct GradientResult {
 	pub angle: f64,
 }
 
-pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
+pub fn extract_gradient_hex(
+	image_path: &Path,
+	resize_width: i32,
+	blur_sigma: f64,
+) -> Result<GradientResult> {
 	let img = imgcodecs::imread(
 		image_path.to_str().context("Not a valid filepath")?,
 		imgcodecs::IMREAD_COLOR,
@@ -34,7 +35,7 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 	imgproc::resize(
 		&img,
 		&mut small,
-		core::Size::new(RESIZE_DIM, RESIZE_DIM * size.height / size.width),
+		core::Size::new(resize_width, resize_width * size.height / size.width),
 		0.0,
 		0.0,
 		imgproc::INTER_AREA,
@@ -45,8 +46,8 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		&small,
 		&mut blurred,
 		core::Size::new(0, 0),
-		BLUR_SIGMA,
-		BLUR_SIGMA,
+		blur_sigma,
+		blur_sigma,
 		BorderTypes::BORDER_REFLECT_101 as i32,
 		core::AlgorithmHint::ALGO_HINT_ACCURATE,
 	)?;
