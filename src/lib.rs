@@ -4,6 +4,7 @@ use opencv::{
 	core::{self, BorderTypes, CV_8UC1, CV_64F, Mat, Scalar},
 	imgcodecs, imgproc,
 	prelude::*,
+	viz::Color,
 };
 use std::path::Path;
 
@@ -12,8 +13,8 @@ const BLUR_SIGMA: f64 = 15.0;
 
 #[derive(Debug)]
 pub struct GradientResult {
-	pub start_color: String,
-	pub end_color: String,
+	pub start_color: Color,
+	pub end_color: Color,
 	pub angle: f64,
 }
 
@@ -197,35 +198,33 @@ pub fn extract_gradient_hex(image_path: &Path) -> Result<GradientResult> {
 		&mut end_mask,
 	)?;
 
-	let get_avg_color = |mask: &Mat| -> Result<core::Vec3b> {
+	let get_avg_color = |mask: &Mat| -> Result<core::Vec3d> {
 		let mean_val = core::mean(&blurred, mask)?;
-		let b = mean_val[0].clamp(0.0, 255.0).round() as u8;
-		let g = mean_val[1].clamp(0.0, 255.0).round() as u8;
-		let r = mean_val[2].clamp(0.0, 255.0).round() as u8;
-		Ok(core::Vec3b::from([b, g, r]))
+		let b = mean_val[0].clamp(0.0, 255.0).round();
+		let g = mean_val[1].clamp(0.0, 255.0).round();
+		let r = mean_val[2].clamp(0.0, 255.0).round();
+		Ok(core::Vec3d::from([b, g, r]))
 	};
 
 	let start_bgr = if core::count_non_zero(&start_mask)? > 0 {
 		get_avg_color(&start_mask)?
 	} else {
-		core::Vec3b::all(0)
+		core::Vec3d::all(0.0)
 	};
 
 	let end_bgr = if core::count_non_zero(&end_mask)? > 0 {
 		get_avg_color(&end_mask)?
 	} else {
-		core::Vec3b::all(0)
+		core::Vec3d::all(0.0)
 	};
 
-	let start_hex = format!(
-		"#{:02x}{:02x}{:02x}",
-		start_bgr[2], start_bgr[1], start_bgr[0]
-	);
-	let end_hex = format!("#{:02x}{:02x}{:02x}", end_bgr[2], end_bgr[1], end_bgr[0]);
+	let start_color = Color::new_1(start_bgr[0], start_bgr[1], start_bgr[2])?;
+
+	let end_color = Color::new_1(end_bgr[0], end_bgr[1], end_bgr[2])?;
 
 	Ok(GradientResult {
-		start_color: start_hex,
-		end_color: end_hex,
+		start_color: start_color,
+		end_color: end_color,
 		angle: angle,
 	})
 }
